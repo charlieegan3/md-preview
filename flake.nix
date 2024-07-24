@@ -1,5 +1,5 @@
 {
-  description = "example-flake";
+  description = "md-prview";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -19,8 +19,22 @@
 
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [
-            hello
+            gh
+            gh-markdown-preview
+            lsof
           ];
+
+          shellHook = ''
+            port=3333
+
+            if lsof -i:$port > /dev/null; then
+              echo "Port $port is in use."
+            else
+              gh extension install yusukebe/gh-markdown-preview
+              touch preview.md
+              gh markdown-preview preview.md
+            fi
+          '';
         };
       }
     );
